@@ -1,82 +1,84 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js"></script>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     
     <style>
-        body { margin: 0; overflow: hidden; }
+        /* Примусово розтягуємо все на весь екран */
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
         
-        /* 🔥 ТУТ МАГІЯ НА ВЕСЬ ЕКРАН ДЛЯ IPHONE */
+        /* Це виправляє "шматочок" камери на iPhone */
         .a-canvas {
             width: 100% !important;
             height: 100% !important;
-            object-fit: cover !important;
             top: 0 !important;
             left: 0 !important;
+            position: absolute !important;
         }
 
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8); color: #00ff00; z-index: 10;
+            background: rgba(0, 0, 0, 0.8); color: #00ff00; z-index: 100;
             display: flex; flex-direction: column; justify-content: center;
             align-items: center; cursor: pointer; text-align: center;
             font-family: monospace;
         }
+        .btn { border: 2px solid #00ff00; padding: 15px 30px; font-size: 18px; }
     </style>
 </head>
 <body>
 
     <div id="overlay">
-        <div style="border: 2px solid #00ff00; padding: 15px;">ЗАПУСТИТИ СКАНЕР</div>
-        <p style="margin-top: 15px;">Натисни тут і наводь на стікери</p>
+        <div class="btn">УВІМКНУТИ СКАНЕР</div>
+        <p style="margin-top: 15px;">Наведи на стікер після натискання</p>
     </div>
 
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiScanning: yes;" 
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiScanning: yes; filterMinCF:0.001; filterBeta: 10;" 
              embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" 
              vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
         <a-assets>
-            <a-mixin id="frame" 
+            <a-mixin id="scanner-frame" 
                 line="start: -0.5 0.7 0; end: 0.5 0.7 0; color: #00ff00"
                 line__2="start: -0.5 -0.7 0; end: 0.5 -0.7 0; color: #00ff00"
                 line__3="start: -0.5 0.7 0; end: -0.5 -0.7 0; color: #00ff00"
                 line__4="start: 0.5 0.7 0; end: 0.5 -0.7 0; color: #00ff00"></a-mixin>
         </a-assets>
 
-        <a-entity class="target-ent" mindar-image-target="targetIndex: 0">
-            <a-entity mixin="frame"></a-entity>
+        <a-entity class="ar-target" mindar-image-target="targetIndex: 0">
+            <a-entity mixin="scanner-frame"></a-entity>
             <a-entity position="0 0.9 0.1">
-                <a-plane color="black" width="1.6" height="0.4" opacity="0.8"></a-plane>
-                <a-text value="АНАЛІЗ..." color="#00ff00" align="center" width="4"></a-text>
+                <a-plane color="black" width="1.8" height="0.4" opacity="0.8"></a-plane>
+                <a-text value="СКАНУЮ..." color="#00ff00" align="center" width="4.5"></a-text>
             </a-entity>
         </a-entity>
 
-        <a-entity class="target-ent" mindar-image-target="targetIndex: 1">
-            <a-entity mixin="frame"></a-entity>
+        <a-entity class="ar-target" mindar-image-target="targetIndex: 1">
+            <a-entity mixin="scanner-frame"></a-entity>
             <a-entity position="0 0.9 0.1">
-                <a-plane color="black" width="1.6" height="0.4" opacity="0.8"></a-plane>
-                <a-text value="АНАЛІЗ..." color="#00ff00" align="center" width="4"></a-text>
+                <a-plane color="black" width="1.8" height="0.4" opacity="0.8"></a-plane>
+                <a-text value="СКАНУЮ..." color="#00ff00" align="center" width="4.5"></a-text>
             </a-entity>
         </a-entity>
 
-        <a-entity class="target-ent" mindar-image-target="targetIndex: 2">
-            <a-entity mixin="frame"></a-entity>
+        <a-entity class="ar-target" mindar-image-target="targetIndex: 2">
+            <a-entity mixin="scanner-frame"></a-entity>
             <a-entity position="0 0.9 0.1">
-                <a-plane color="black" width="1.6" height="0.4" opacity="0.8"></a-plane>
-                <a-text value="АНАЛІЗ..." color="#00ff00" align="center" width="4"></a-text>
+                <a-plane color="black" width="1.8" height="0.4" opacity="0.8"></a-plane>
+                <a-text value="СКАНУЮ..." color="#00ff00" align="center" width="4.5"></a-text>
             </a-entity>
         </a-entity>
 
-        <a-entity class="target-ent" mindar-image-target="targetIndex: 3">
-            <a-entity mixin="frame"></a-entity>
+        <a-entity class="ar-target" mindar-image-target="targetIndex: 3">
+            <a-entity mixin="scanner-frame"></a-entity>
             <a-entity position="0 0.9 0.1">
-                <a-plane color="black" width="1.6" height="0.4" opacity="0.8"></a-plane>
-                <a-text value="АНАЛІЗ..." color="#00ff00" align="center" width="4"></a-text>
+                <a-plane color="black" width="1.8" height="0.4" opacity="0.8"></a-plane>
+                <a-text value="СКАНУЮ..." color="#00ff00" align="center" width="4.5"></a-text>
             </a-entity>
         </a-entity>
 
@@ -86,27 +88,24 @@
         const phrases = [
             "⚠️ ПОРУШНИК: БЕЗ КАСКИ",
             "✅ ОБ'ЄКТ БЕЗПЕЧНИЙ",
-            "❌ ШТРАФ: 1000 ГРН",
+            "🛑 ШТРАФ: 1000 ГРН",
             "❓ ДЕ ТВОЯ МАСКА?",
-            "🛑 ПОРУШЕННЯ ПРАВИЛ",
             "🌟 СУПЕР-СПЕЦІАЛІСТ",
-            "🕵️‍♀️ ШУКАЮ ПОРУШНИКА...",
-            "👷 ПРОВЕДИ ІНСТРУКТАЖ!",
-            "✋ ПО РУКАХ ЗА ПОМИЛКИ!",
-            "☕ ВИПИЙ КАВИ ТА ВДЯГНИ ЖИЛЕТ"
+            "👷 ТИ КРАЩИЙ!",
+            "☕ ЧАС ПИТИ КАВУ",
+            "🕵️‍♀️ ОБ'ЄКТ ПІД НАГЛЯДОМ",
+            "✋ ОТРИМАЙ ПО РУКАХ!"
         ];
 
         const overlay = document.getElementById('overlay');
-        overlay.addEventListener('click', () => {
-            overlay.style.display = 'none';
-        });
+        overlay.addEventListener('click', () => { overlay.style.display = 'none'; });
 
-        const targets = document.querySelectorAll('.target-ent');
+        const targets = document.querySelectorAll('.ar-target');
         targets.forEach(t => {
             t.addEventListener("targetFound", () => {
-                const text = t.querySelector('a-text');
-                const rand = Math.floor(Math.random() * phrases.length);
-                text.setAttribute('value', phrases[rand]);
+                const textElement = t.querySelector('a-text');
+                const randomIndex = Math.floor(Math.random() * phrases.length);
+                textElement.setAttribute('value', phrases[randomIndex]);
             });
         });
     </script>
