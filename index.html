@@ -7,79 +7,99 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     
     <style>
-        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-        .a-canvas { width: 100% !important; height: 100% !important; top: 0 !important; left: 0 !important; position: absolute !important; }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: black; }
+        .a-canvas { width: 100% !important; height: 100% !important; position: absolute; top: 0; left: 0; }
+        
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8); color: #00ff00; z-index: 100;
+            background: rgba(0, 0, 0, 0.9); color: #00ff00; z-index: 100;
             display: flex; flex-direction: column; justify-content: center;
-            align-items: center; cursor: pointer; text-align: center;
-            font-family: sans-serif;
+            align-items: center; cursor: pointer; text-align: center; font-family: sans-serif;
+        }
+
+        /* 🔥 ЦЕ ВІКОНЦЕ З ТЕКСТОМ, ЯКЕ ТОЧНО ПРАЦЮВАТИМЕ */
+        #ar-status-panel {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 20px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 22px;
+            font-weight: bold;
+            z-index: 50;
+            display: none; /* Спочатку ховаємо */
+            box-shadow: 0 0 15px #00ff00;
         }
     </style>
 </head>
 <body>
 
     <div id="overlay">
-        <div style="border: 2px solid #00ff00; padding: 15px 30px; font-weight: bold;">УВІМКНУТИ СКАНЕР</div>
+        <div style="border: 2px solid #00ff00; padding: 20px;">ЗАПУСТИТИ AR-СКАНЕР</div>
         <p style="margin-top: 15px;">Наведи на стікер для аналізу</p>
     </div>
 
+    <div id="ar-status-panel">АНАЛІЗ ОБ'ЄКТА...</div>
+
     <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiScanning: no;" 
-             embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" 
-             vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+             embedded vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-        <a-assets>
-            <a-mixin id="scanner-frame" 
-                line="start: -0.5 0.7 0; end: 0.5 0.7 0; color: #00ff00"
-                line__2="start: -0.5 -0.7 0; end: 0.5 -0.7 0; color: #00ff00"
-                line__3="start: -0.5 0.7 0; end: -0.5 -0.7 0; color: #00ff00"
-                line__4="start: 0.5 0.7 0; end: 0.5 -0.7 0; color: #00ff00"></a-mixin>
-        </a-assets>
+        <a-entity mindar-image-target="targetIndex: 0" class="ar-target">
+            <a-entity line="start: -0.5 0.7 0; end: 0.5 0.7 0; color: #00ff00" line__2="start: -0.5 -0.7 0; end: 0.5 -0.7 0; color: #00ff00" line__3="start: -0.5 0.7 0; end: -0.5 -0.7 0; color: #00ff00" line__4="start: 0.5 0.7 0; end: 0.5 -0.7 0; color: #00ff00"></a-entity>
+        </a-entity>
 
-        <script>
-            for (let i = 0; i < 4; i++) {
-                document.write(`
-                    <a-entity class="ar-target" mindar-image-target="targetIndex: ${i}">
-                        <a-entity mixin="scanner-frame"></a-entity>
-                        <a-entity position="0 0.9 0.1">
-                            <a-plane color="black" width="1.8" height="0.4" opacity="0.8"></a-plane>
-                            <a-entity class="text-label" 
-                                      text="value: СТАТУС...; align: center; width: 4; color: #00ff00; font: https://cdn.aframe.io/fonts/Roboto-msdf.json; negate: false">
-                            </a-entity>
-                        </a-entity>
-                    </a-entity>
-                `);
-            }
-        </script>
+        <a-entity mindar-image-target="targetIndex: 1" class="ar-target">
+            <a-entity line="start: -0.5 0.7 0; end: 0.5 0.7 0; color: #00ff00" line__2="start: -0.5 -0.7 0; end: 0.5 -0.7 0; color: #00ff00" line__3="start: -0.5 0.7 0; end: -0.5 -0.7 0; color: #00ff00" line__4="start: 0.5 0.7 0; end: 0.5 -0.7 0; color: #00ff00"></a-entity>
+        </a-entity>
+
+        <a-entity mindar-image-target="targetIndex: 2" class="ar-target">
+            <a-entity line="start: -0.5 0.7 0; end: 0.5 0.7 0; color: #00ff00" line__2="start: -0.5 -0.7 0; end: 0.5 -0.7 0; color: #00ff00" line__3="start: -0.5 0.7 0; end: -0.5 -0.7 0; color: #00ff00" line__4="start: 0.5 0.7 0; end: 0.5 -0.7 0; color: #00ff00"></a-entity>
+        </a-entity>
+
+        <a-entity mindar-image-target="targetIndex: 3" class="ar-target">
+            <a-entity line="start: -0.5 0.7 0; end: 0.5 0.7 0; color: #00ff00" line__2="start: -0.5 -0.7 0; end: 0.5 -0.7 0; color: #00ff00" line__3="start: -0.5 0.7 0; end: -0.5 -0.7 0; color: #00ff00" line__4="start: 0.5 0.7 0; end: 0.5 -0.7 0; color: #00ff00"></a-entity>
+        </a-entity>
 
     </a-scene>
 
     <script>
         const phrases = [
-            "ПОРУШНИК: БЕЗ КАСКИ!",
-            "ОБ'ЄКТ БЕЗПЕЧНИЙ ✅",
-            "ШТРАФ: 1000 ГРН 💸",
-            "ДЕ ТВОЯ МАСКА? 😷",
-            "СУПЕР-СПЕЦІАЛІСТ 👷",
+            "⚠️ ПОРУШНИК: БЕЗ КАСКИ!",
+            "✅ ОБ'ЄКТ БЕЗПЕЧНИЙ",
+            "🛑 ШТРАФ: 1000 ГРН 💸",
+            "❓ ДЕ ТВОЯ МАСКА? 😷",
+            "🌟 СУПЕР-СПЕЦІАЛІСТ 👷",
             "ТИ КРАЩИЙ! ✨",
             "ЧАС ПИТИ КАВУ ☕",
-            "ОБ'ЄКТ ПІД НАГЛЯДОМ 🕵️",
-            "ОТРИМАЙ ПО РУКАХ! ✋"
+            "🕵️ ОБ'ЄКТ ПІД НАГЛЯДОМ",
+            "✋ ОТРИМАЙ ПО РУКАХ!"
         ];
 
         const overlay = document.getElementById('overlay');
+        const statusPanel = document.getElementById('ar-status-panel');
+        const targets = document.querySelectorAll('.ar-target');
+
         overlay.addEventListener('click', () => { overlay.style.display = 'none'; });
 
-        const targets = document.querySelectorAll('.ar-target');
         targets.forEach(t => {
+            // Коли камера знайшла стікер
             t.addEventListener("targetFound", () => {
-                const textEntity = t.querySelector('.text-label');
                 const randomIndex = Math.floor(Math.random() * phrases.length);
-                // Важливо міняти саме атрибут text
-                textEntity.setAttribute('text', 'value', phrases[randomIndex]);
+                statusPanel.innerText = phrases[randomIndex];
+                statusPanel.style.display = 'block'; // Показуємо віконце
+            });
+
+            // Коли камера загубила стікер
+            t.addEventListener("targetLost", () => {
+                statusPanel.style.display = 'none'; // Ховаємо віконце
             });
         });
     </script>
