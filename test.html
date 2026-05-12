@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camera Test</title>
+</head>
+<body style="margin: 0; background: black; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
+    
+    <h2>ТЕСТ КАМЕРИ</h2>
+    <video id="v" autoplay playsinline style="width: 90%; border: 2px solid white;"></video>
+    <p id="status">Запит доступу...</p>
+
+    <script>
+        const v = document.getElementById('v');
+        const s = document.getElementById('status');
+
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(stream => {
+                v.srcObject = stream;
+                s.innerText = "ПРАЦЮЄ! Бачиш зображення?";
+                s.style.color = "#00ff00";
+            })
+            .catch(err => {
+                s.innerText = "ПОМИЛКА: " + err.name;
+                s.style.color = "red";
+            });
+    </script>
+</body>
+</html>
