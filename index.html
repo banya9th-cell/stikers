@@ -7,19 +7,9 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     
     <style>
-        /* Примусово робимо фон прозорим, щоб бачити камеру */
         html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+        .a-canvas { width: 100% !important; height: 100% !important; position: absolute !important; top: 0; left: 0; z-index: 1; }
         
-        /* Виправляємо відображення камери */
-        .a-canvas { 
-            width: 100% !important; 
-            height: 100% !important; 
-            position: absolute !important; 
-            top: 0 !important; 
-            left: 0 !important; 
-            z-index: 1 !important; /* Камера на фоні */
-        }
-
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.9); color: #00ff00; z-index: 100;
@@ -28,34 +18,22 @@
         }
 
         #ar-status-panel {
-            position: fixed;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 85%;
-            background: rgba(0, 0, 0, 0.85);
-            border: 3px solid #00ff00;
-            color: #00ff00;
-            padding: 15px;
-            text-align: center;
-            font-family: 'Courier New', monospace;
-            font-size: 20px;
-            font-weight: bold;
-            z-index: 50; /* Віконце над камерою */
-            display: none;
-            box-shadow: 0 0 20px #00ff00;
-            border-radius: 10px;
+            position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
+            width: 85%; background: rgba(0, 0, 0, 0.85); border: 3px solid #00ff00;
+            color: #00ff00; padding: 20px; text-align: center;
+            font-family: 'Courier New', monospace; font-size: 18px; font-weight: bold;
+            z-index: 50; display: none; box-shadow: 0 0 20px #00ff00; border-radius: 15px;
         }
     </style>
 </head>
 <body>
 
     <div id="overlay">
-        <div style="border: 2px solid #00ff00; padding: 20px; text-transform: uppercase;">Запустити Сканер</div>
-        <p style="margin-top: 15px;">Натисни та наводь на стікери</p>
+        <div style="border: 2px solid #00ff00; padding: 20px; font-weight: bold;">ЗАПУСТИТИ AR-ОРАКУЛ</div>
+        <p style="margin-top: 15px;">Наведи на стікер, щоб дізнатися долю</p>
     </div>
 
-    <div id="ar-status-panel">АНАЛІЗ ОБ'ЄКТА...</div>
+    <div id="ar-status-panel">АНАЛІЗУЮ КАРМУ...</div>
 
     <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiScanning: no;" 
              embedded vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
@@ -63,14 +41,14 @@
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
         <script>
-            for(let i=0; i<4; i++) {
+            // Генеруємо таргет-зони для 8 стікерів (індекси 0-7)
+            for(let i=0; i<8; i++) {
                 document.write(`
                     <a-entity mindar-image-target="targetIndex: ${i}" class="ar-target">
                         <a-entity line="start: -0.5 0.7 0; end: 0.5 0.7 0; color: #00ff00" 
                                   line__2="start: -0.5 -0.7 0; end: 0.5 -0.7 0; color: #00ff00" 
                                   line__3="start: -0.5 0.7 0; end: -0.5 -0.7 0; color: #00ff00" 
-                                  line__4="start: 0.5 0.7 0; end: 0.5 -0.7 0; color: #00ff00">
-                        </a-entity>
+                                  line__4="start: 0.5 0.7 0; end: 0.5 -0.7 0; color: #00ff00"></a-entity>
                     </a-entity>
                 `);
             }
@@ -78,18 +56,59 @@
     </a-scene>
 
     <script>
-        const phrases = [
-            "⚠️ ПОРУШНИК: БЕЗ КАСКИ!",
-            "✅ ОБ'ЄКТ БЕЗПЕЧНИЙ",
-            "🛑 ШТРАФ: 1000 ГРН 💸",
-            "❓ ДЕ ТВОЯ МАСКА? 😷",
-            "🌟 СУПЕР-СПЕЦІАЛІСТ 👷",
-            "ТИ КРАЩИЙ! ✨",
-            "ЧАС ПИТИ КАВУ ☕",
-            "🕵️ ОБ'ЄКТ ПІД НАГЛЯДОМ",
-            "✋ ОТРИМАЙ ПО РУКАХ!",
-            "👷 ПРОВЕДИ ІНСТРУКТАЖ!"
-        ];
+        const predictions = {
+            0: [ // Вогнегасник
+                "Доля сьогодні на твоєму боці: твій запит на відпустку підпишуть швидше, ніж ти встигнеш вигоріти.",
+                "«Сьогодні ти будеш сяяти, але нехай іскри будуть тільки в очах, а не в проводці!»",
+                "«Твої почуття — вогонь, але не смикай їх за чеку, як вогнегасник.»",
+                "«Доля каже: не грай з вогнем, бо навіть я не врятую твій квартальний звіт.»",
+                "«Сьогодні на тебе чекає гаряча зустріч, але нехай це буде побачення, а не ДСНС»"
+            ],
+            1: [ // Зізнутий
+                "«Твої очі занадто прекрасні, щоб дивитися на світ лише одним з них. Одягни захисні окуляри!»",
+                "«Всесвіт хоче, щоб ти чув музику сфер, а не гуркіт перфоратора. Одягни навушники!»",
+                "«Зорі кажуть: твоя аура сьогодні в безпеці, тільки якщо ти в респіраторі.»",
+                "«Сьогодні ти зустрінеш свою долю. Головне — щоб ти її впізнав через комбінезон»"
+            ],
+            2: [ // Повезе не повезе
+                "«Сьогодні фортуна посміхнеться... якщо перевіриш надійність кріплення палет.»",
+                "«Доля — штука мінлива: або ти везеш вантаж, або вантаж везе тебе в травмпункт.»",
+                "«Прогноз: твій шлях буде рівним, якщо не робитимеш віражі, як у Формулі-1.»",
+                "«Твій центр тяжіння сьогодні — стабільність. Не перевантажуй карму і вила.»"
+            ],
+            3: [ // Згідно з НПАОП
+                "Закон каже: не сперечайся з бухгалтерією, бо їхній гнів страшніший за будь-яку перевірку Держпраці.",
+                "«Твоя Біблія на сьогодні — інструкція з охорони праці. Прочитай, щоб не стати мучеником.»",
+                "«Згідно з планом зірок: інструктаж сьогодні замінює ранкову медитацію.»",
+                "«Закон — один для всіх, але кава смакує краще, коли всі протоколи підписані й акти закриті.»",
+                "«Доля сьогодні на твоєму боці, бо ти знаєш статті НПАОП краще за «Отче наш»."
+            ],
+            4: [ // Це космос
+                "Твоя енергія на висоті, але не намагайся вийти у відкритий офіс без навушників — там небезпечно",
+                "«Твій успіх сьогодні буде космічним, якщо ти не забудеш про земні правила безпеки.»",
+                "«Зорі віщують стрімкий зліт! Головне — щоб твоя ракета була заземлена згідно з НПАОП.»",
+                "«Згідно з планом зірок: твій робочий день закінчується, коли закриваєш ноутбук, а не коли він 'засинає' разом з тобою»"
+            ],
+            5: [ // Всемогутній інженер
+                "«Весь відділ звільнився, а ти за стажера? Вітаю, тепер ти тімлід! Головне — не питай, де документація.»",
+                "Твоя енергія сьогодні на висоті, але навіть восьми рук не вистачить, щоб розгребти всі твої таски",
+                "«Ти можеш усе, але навіть восьми рук не вистачить, щоб тримати каску, яка висить на гачку.»",
+                "«Всесвіт дає тобі сили на 100 справ, але заповнення журналу інструктажу — пріоритет №1.»",
+                "«Доля віщує успіх у переговорах, якщо ти не заплутаєшся у проводах під столом.»"
+            ],
+            6: [ // Можна і так
+                "«Твоя віра в себе — це круто, але гравітація вірить у себе сильніше. Злізь звідти!»",
+                "«Сьогодні на тебе чекає несподіваний злет... і дуже швидке приземлення. Не забудь страхувальний пояс і канат.»",
+                "«Карма каже: драбина — це не крісло-гойдалка. Бережи свій куприк!»",
+                "«Зірки віщують падіння... твоєї продуктивності після обіду. Можна і так, але краще підіпри голову рукою.»"
+            ],
+            7: [ // Супер треба переробити
+                "«Всесвіт каже: твій шедевр тримається на синій ізоляційній стрічці та вірі в краще.»",
+                "«Зорі віщують: технагляд прийде саме тоді, коли ти вирішив, що 'і так зійде'.»",
+                "«Доля сьогодні на твоєму боці: ти знайшов помилку раніше за замовника. Це — знак»",
+                "«Пророцтво: якщо не переробиш це сьогодні, воно відпаде саме в п'ятницю о 17:59.»"
+            ]
+        };
 
         const overlay = document.getElementById('overlay');
         const statusPanel = document.getElementById('ar-status-panel');
@@ -97,10 +116,11 @@
 
         overlay.addEventListener('click', () => { overlay.style.display = 'none'; });
 
-        targets.forEach(t => {
+        targets.forEach((t, index) => {
             t.addEventListener("targetFound", () => {
-                const randomIndex = Math.floor(Math.random() * phrases.length);
-                statusPanel.innerText = phrases[randomIndex];
+                const currentPhrases = predictions[index] || ["Твоя доля ще не написана в НПАОП..."];
+                const randomIndex = Math.floor(Math.random() * currentPhrases.length);
+                statusPanel.innerText = currentPhrases[randomIndex];
                 statusPanel.style.display = 'block';
             });
             t.addEventListener("targetLost", () => {
