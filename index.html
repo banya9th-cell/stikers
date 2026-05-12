@@ -9,7 +9,7 @@
 <body style="margin: 0; overflow: hidden;">
     <div id="overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #00ff00; cursor: pointer; text-align: center; font-family: monospace;">
         <h2 style="border: 2px solid #00ff00; padding: 10px;">ЗАПУСТИТИ AR-СКАНЕР</h2>
-        <p>Натисни та шукай порушників</p>
+        <p>Натисни та наводь на стікери</p>
     </div>
 
     <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiScanning: no;" 
@@ -18,17 +18,35 @@
         
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-        <a-entity id="scanner" mindar-image-target="targetIndex: 0">
-            <a-entity line="start: -0.5 0.8 0; end: 0.5 0.8 0; color: #00ff00"
-                      line__2="start: -0.5 -0.8 0; end: 0.5 -0.8 0; color: #00ff00"
-                      line__3="start: -0.5 0.8 0; end: -0.5 -0.8 0; color: #00ff00"
-                      line__4="start: 0.5 0.8 0; end: 0.5 -0.8 0; color: #00ff00"></a-entity>
-            
-            <a-entity position="0 1 0">
-                <a-plane color="black" width="1.6" height="0.4" opacity="0.8"></a-plane>
-                <a-text id="status-text" value="АНАЛІЗ ОБ'ЄКТА..." color="#00ff00" align="center" width="4"></a-text>
-            </a-entity>
+        <a-assets>
+            <a-mixin id="frameLines"
+                     line="start: -0.5 0.8 0; end: 0.5 0.8 0; color: #00ff00"
+                     line__2="start: -0.5 -0.8 0; end: 0.5 -0.8 0; color: #00ff00"
+                     line__3="start: -0.5 0.8 0; end: -0.5 -0.8 0; color: #00ff00"
+                     line__4="start: 0.5 0.8 0; end: 0.5 -0.8 0; color: #00ff00"></a-mixin>
+            <a-mixin id="textPlates" position="0 1.0 0.1"></a-mixin>
+        </a-assets>
+
+        <a-entity class="scanner-target" mindar-image-target="targetIndex: 0">
+            <a-entity mixin="frameLines"></a-entity>
+            <a-entity mixin="textPlates"><a-plane color="black" width="1.6" height="0.4"></a-plane><a-text color="#00ff00" align="center" width="4"></a-text></a-entity>
         </a-entity>
+
+        <a-entity class="scanner-target" mindar-image-target="targetIndex: 1">
+            <a-entity mixin="frameLines"></a-entity>
+            <a-entity mixin="textPlates"><a-plane color="black" width="1.6" height="0.4"></a-plane><a-text color="#00ff00" align="center" width="4"></a-text></a-entity>
+        </a-entity>
+
+        <a-entity class="scanner-target" mindar-image-target="targetIndex: 2">
+            <a-entity mixin="frameLines"></a-entity>
+            <a-entity mixin="textPlates"><a-plane color="black" width="1.6" height="0.4"></a-plane><a-text color="#00ff00" align="center" width="4"></a-text></a-entity>
+        </a-entity>
+
+        <a-entity class="scanner-target" mindar-image-target="targetIndex: 3">
+            <a-entity mixin="frameLines"></a-entity>
+            <a-entity mixin="textPlates"><a-plane color="black" width="1.6" height="0.4"></a-plane><a-text color="#00ff00" align="center" width="4"></a-text></a-entity>
+        </a-entity>
+
     </a-scene>
 
     <script>
@@ -39,20 +57,26 @@
             "❓ ДЕ ТВОЯ МАСКА?",
             "🛑 ПОРУШЕННЯ ПРАВИЛ",
             "🌟 СУПЕР-СПЕЦІАЛІСТ",
-            "👷 ПРОВЕДИ ІНСТРУКТАЖ!"
+            "🕵️‍♀️ ШУКАЮ ПОРУШНИКА...",
+            "👷 ПРОВЕДИ ІНСТРУКТАЖ!",
+            "✋ ПО РУКАХ ЗА ПОМИЛКИ!",
+            "☕ ВИПИЙ КАВИ ТА ВДЯГНИ ЖИЛЕТ"
         ];
 
         const overlay = document.getElementById('overlay');
-        const statusText = document.getElementById('status-text');
-        const scanner = document.getElementById('scanner');
+        overlay.addEventListener('click', () => { overlay.style.display = 'none'; });
 
-        overlay.addEventListener('click', () => {
-            overlay.style.display = 'none';
-        });
+        // Знаходимо всі 4 сканери
+        const targets = document.querySelectorAll('.scanner-target');
 
-        scanner.addEventListener("targetFound", () => {
-            const randomIdx = Math.floor(Math.random() * phrases.length);
-            statusText.setAttribute('value', phrases[randomIdx]);
+        // Для кожного сканера додаємо логіку рандому
+        targets.forEach(target => {
+            target.addEventListener("targetFound", () => {
+                // Міняємо фразу тільки в тому сканері, що знайшли
+                const textEntity = target.querySelector('a-text');
+                const randomIdx = Math.floor(Math.random() * phrases.length);
+                textEntity.setAttribute('value', phrases[randomIdx]);
+            });
         });
     </script>
 </body>
