@@ -1,28 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Camera Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js"></script>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 </head>
-<body style="margin: 0; background: black; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
-    
-    <h2>ТЕСТ КАМЕРИ</h2>
-    <video id="v" autoplay playsinline style="width: 90%; border: 2px solid white;"></video>
-    <p id="status">Запит доступу...</p>
+<body style="margin: 0; overflow: hidden;">
+    <div id="overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #00ff00; cursor: pointer; text-align: center; font-family: monospace;">
+        <h2 style="border: 2px solid #00ff00; padding: 10px;">ЗАПУСТИТИ AR-СКАНЕР</h2>
+        <p>Натисни та шукай порушників</p>
+    </div>
+
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiScanning: no;" 
+             embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" 
+             vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+        
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+        <a-entity id="scanner" mindar-image-target="targetIndex: 0">
+            <a-entity line="start: -0.5 0.8 0; end: 0.5 0.8 0; color: #00ff00"
+                      line__2="start: -0.5 -0.8 0; end: 0.5 -0.8 0; color: #00ff00"
+                      line__3="start: -0.5 0.8 0; end: -0.5 -0.8 0; color: #00ff00"
+                      line__4="start: 0.5 0.8 0; end: 0.5 -0.8 0; color: #00ff00"></a-entity>
+            
+            <a-entity position="0 1 0">
+                <a-plane color="black" width="1.6" height="0.4" opacity="0.8"></a-plane>
+                <a-text id="status-text" value="АНАЛІЗ ОБ'ЄКТА..." color="#00ff00" align="center" width="4"></a-text>
+            </a-entity>
+        </a-entity>
+    </a-scene>
 
     <script>
-        const v = document.getElementById('v');
-        const s = document.getElementById('status');
+        const phrases = [
+            "⚠️ ПОРУШНИК: БЕЗ КАСКИ",
+            "✅ ОБ'ЄКТ БЕЗПЕЧНИЙ",
+            "❌ ШТРАФ: 1000 ГРН",
+            "❓ ДЕ ТВОЯ МАСКА?",
+            "🛑 ПОРУШЕННЯ ПРАВИЛ",
+            "🌟 СУПЕР-СПЕЦІАЛІСТ",
+            "👷 ПРОВЕДИ ІНСТРУКТАЖ!"
+        ];
 
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-            .then(stream => {
-                v.srcObject = stream;
-                s.innerText = "ПРАЦЮЄ! Бачиш зображення?";
-                s.style.color = "#00ff00";
-            })
-            .catch(err => {
-                s.innerText = "ПОМИЛКА: " + err.name;
-                s.style.color = "red";
-            });
+        const overlay = document.getElementById('overlay');
+        const statusText = document.getElementById('status-text');
+        const scanner = document.getElementById('scanner');
+
+        overlay.addEventListener('click', () => {
+            overlay.style.display = 'none';
+        });
+
+        scanner.addEventListener("targetFound", () => {
+            const randomIdx = Math.floor(Math.random() * phrases.length);
+            statusText.setAttribute('value', phrases[randomIdx]);
+        });
     </script>
 </body>
 </html>
